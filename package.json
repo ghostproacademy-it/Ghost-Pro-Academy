@@ -4,13 +4,15 @@
   "private": true,
   "workspaces": [
     "backend",
-    "frontend"
+    "frontend",
+    "shared"
   ],
   "scripts": {
-    "start:backend": "npm run start --workspace=backend",
-    "start:frontend": "npm run start --workspace=frontend",
-    "build:backend": "npm run build --workspace=backend",
-    "build:frontend": "npm run build --workspace=frontend",
+    "build:shared": "npm run build --workspace=shared",
+    "start:backend": "build:shared && npm run start --workspace=backend",
+    "start:frontend": "build:shared && npm run start --workspace=frontend",
+    "build:backend": "build:shared && npm run build --workspace=backend",
+    "build:frontend": "build:shared && npm run build --workspace=frontend",
     "test:backend": "npm run test --workspace=backend",
     "test:frontend": "npm run test --workspace=frontend"
   }

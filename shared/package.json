@@ -2,6 +2,12 @@
   "name": "@ghost-pro-academy/shared",
   "version": "1.0.0",
   "private": true,
-  "main": "./types/index.ts",
-  "types": "./types/index.ts"
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
 }
