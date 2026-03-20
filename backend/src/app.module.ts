@@ -18,7 +18,7 @@ import { UsersModule } from './users/users.module';
         username: config.get<string>('DB_USER'),
         password: config.get<string>('DB_PASSWORD'),
         database: config.get<string>('DB_NAME'),
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+        entities: [__dirname + '/**/*.orm-entity{.ts,.js}'],
         synchronize: config.get<string>('NODE_ENV') === 'development',
       }),
     }),

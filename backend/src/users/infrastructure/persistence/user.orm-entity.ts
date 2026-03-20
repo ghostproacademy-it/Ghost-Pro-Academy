@@ -1,17 +1,17 @@
 import {
+  BeforeInsert,
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
   PrimaryColumn,
   UpdateDateColumn,
-  BeforeInsert,
 } from 'typeorm';
 import { v7 as uuidv7 } from 'uuid';
 import { UserRole } from '@ghost-pro-academy/shared';
 
 @Entity('users')
-export class User {
+export class UserOrmEntity {
   @PrimaryColumn({ type: 'uuid' })
   id: string;
 
