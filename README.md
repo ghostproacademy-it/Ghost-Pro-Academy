@@ -127,6 +127,7 @@ Before contributing, read the ADRs in [`docs/adr/`](docs/adr/). They explain eve
 | [ADR-001](docs/adr/ADR-001-tech-stack.md) | Tech stack (NestJS, Angular, monolith, monorepo) |
 | [ADR-002](docs/adr/ADR-002-database.md) | Database (PostgreSQL over MongoDB) |
 | [ADR-003](docs/adr/ADR-003-authentication.md) | Authentication (JWT, HttpOnly cookies, bcrypt) |
+| [ADR-004](docs/adr/ADR-004-backend-architecture.md) | Backend architecture (Clean Architecture) |
 
 ---
 
