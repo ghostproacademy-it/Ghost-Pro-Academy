@@ -169,8 +169,44 @@ Following the Clean Architecture pattern established in ADR-004, auth is impleme
 **Business logic (Application)**
 - Each auth operation is a dedicated Use Case class (see ADR-004):
   - `RegisterUseCase` — validates email uniqueness, hashes password (bcrypt, cost 12), creates user
-  - `LoginUseCase` — verifies credentials, signs JWT, sets HttpOnly cookie on the response
-  - `LogoutUseCase` — clears the cookie
+  - `LoginUseCase` — verifies credentials, signs access token + refresh token, sets both HttpOnly cookies
+  - `RefreshUseCase` — validates refresh token, detects replay attacks, rotates token, issues new pair
+  - `LogoutUseCase` — revokes refresh token in DB, clears both cookies
+
+**Refresh token storage**
+- Refresh tokens are stored in the `refresh_tokens` table
+- The raw token value is **never stored** — only a SHA-256 hex hash of it
+- The raw value goes in the HttpOnly cookie, the hash goes in the DB
+- On refresh: incoming raw token is hashed → looked up by hash in DB
+
+**Rotation and replay attack detection**
+```
+Normal rotation:
+  /refresh called with token A
+  → A found in DB, revokedAt = null, not expired → valid
+  → A marked revokedAt = now
+  → new token B created in DB
+  → new access token + token B returned in cookies
+
+Replay attack detection:
+  /refresh called with already-used token A
+  → A found in DB, revokedAt is SET
+  → all refresh tokens for that user revoked (revokeAllForUser)
+  → 401 — full re-login required
+```
+
+**Cookie configuration**
+
+| Cookie | Path | MaxAge | Purpose |
+|---|---|---|---|
+| `access_token` | `/` | 15 min | Sent with every API request |
+| `refresh_token` | `/auth/refresh` | 7 days | Only sent to the refresh endpoint |
+
+The `refresh_token` cookie is scoped to `path: /auth/refresh` — the browser will only attach it when hitting that specific endpoint, limiting its exposure.
+
+**Scheduled cleanup**
+- The `refresh_tokens` table grows over time as rotated tokens are kept for replay detection
+- A scheduled cleanup job must periodically delete tokens where `expiresAt < NOW()` or `revokedAt` is older than 7 days
 
 **Request lifecycle for a protected route**
 ```
