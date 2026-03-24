@@ -153,3 +153,32 @@ The application has two classes of users: players and administrators (who manage
 - All protected routes use a `JwtAuthGuard` (NestJS guard) that validates the access token from the cookie
 - Role-protected routes additionally use a `RolesGuard` with a `@Roles('admin')` decorator
 - The `Secure` cookie flag requires HTTPS — local development uses HTTP with the flag disabled via environment variable
+
+## NestJS Implementation
+
+Following the Clean Architecture pattern established in ADR-004, auth is implemented as follows:
+
+**Token extraction and validation (Infrastructure)**
+- Passport.js with `passport-jwt` handles token verification
+- A `JwtStrategy` (Passport strategy) is registered in the infrastructure layer — it extracts the token from `req.cookies.access_token`, verifies the signature against `JWT_SECRET`, then calls `UsersService.findById()` with the decoded `sub` to load and attach the user to `req.user`
+
+**Route protection (Presentation)**
+- `JwtAuthGuard` wraps the Passport JWT strategy — applied via `@UseGuards(JwtAuthGuard)` on any protected route
+- `RolesGuard` reads the `@Roles()` decorator on the route handler and checks `req.user.role` — always used together with `JwtAuthGuard`
+
+**Business logic (Application)**
+- Each auth operation is a dedicated Use Case class (see ADR-004):
+  - `RegisterUseCase` — validates email uniqueness, hashes password (bcrypt, cost 12), creates user
+  - `LoginUseCase` — verifies credentials, signs JWT, sets HttpOnly cookie on the response
+  - `LogoutUseCase` — clears the cookie
+
+**Request lifecycle for a protected route**
+```
+Incoming request
+    → JwtAuthGuard triggers JwtStrategy
+    → token extracted from cookie → signature verified → payload decoded
+    → UsersService.findById(payload.sub) → user loaded from DB
+    → user attached to req.user
+    → (optional) RolesGuard checks req.user.role against @Roles()
+    → controller handler runs
+```
