@@ -1,0 +1,181 @@
+<div class="layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar__logo">GHOST <em>PRO</em></div>
+
+    <nav class="sidebar__nav">
+      <a class="nav-item nav-item--active" href="#">
+        <span class="nav-item__icon">▦</span>
+        Overview
+      </a>
+      <a class="nav-item" href="#">
+        <span class="nav-item__icon">◎</span>
+        Drills
+      </a>
+      <a class="nav-item" href="#">
+        <span class="nav-item__icon">▲</span>
+        Leaderboard
+      </a>
+      <a class="nav-item" href="#">
+        <span class="nav-item__icon">◈</span>
+        Progress
+      </a>
+      <a class="nav-item" href="#">
+        <span class="nav-item__icon">⊞</span>
+        Sessions
+      </a>
+    </nav>
+
+    <div class="sidebar__footer">
+      <div class="user-card">
+        <div class="user-card__avatar">GH</div>
+        <div class="user-card__info">
+          <span class="user-card__name">Ghost Player</span>
+          <span class="user-card__role">Pro Member</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div>
+        <h1 class="topbar__title">Overview</h1>
+        <p class="topbar__sub">Wednesday, 25 March 2026</p>
+      </div>
+      <button class="btn-primary">+ New Session</button>
+    </header>
+
+    <!-- Stats -->
+    <section class="stats">
+      <div class="stat-card">
+        <span class="stat-card__label">Sessions this week</span>
+        <span class="stat-card__value">12</span>
+        <span class="stat-card__delta stat-card__delta--up">+3 vs last week</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__label">Total drill time</span>
+        <span class="stat-card__value">8h 24m</span>
+        <span class="stat-card__delta stat-card__delta--up">+1h 10m</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__label">Global rank</span>
+        <span class="stat-card__value">#247</span>
+        <span class="stat-card__delta stat-card__delta--up">↑ 18 spots</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__label">Consistency score</span>
+        <span class="stat-card__value">84%</span>
+        <span class="stat-card__delta stat-card__delta--down">−2% this week</span>
+      </div>
+    </section>
+
+    <!-- Content grid -->
+    <div class="content-grid">
+
+      <!-- Recent sessions -->
+      <div class="panel">
+        <div class="panel__header">
+          <span class="panel__title">Recent Sessions</span>
+          <a class="panel__link" href="#">View all</a>
+        </div>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Drill</th>
+              <th>Duration</th>
+              <th>Score</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Flick training</td>
+              <td>45 min</td>
+              <td><span class="badge badge--green">94</span></td>
+              <td class="text-faint">Mar 24</td>
+            </tr>
+            <tr>
+              <td>Crosshair placement</td>
+              <td>30 min</td>
+              <td><span class="badge badge--green">88</span></td>
+              <td class="text-faint">Mar 23</td>
+            </tr>
+            <tr>
+              <td>Tracking — moving targets</td>
+              <td>60 min</td>
+              <td><span class="badge badge--gold">72</span></td>
+              <td class="text-faint">Mar 22</td>
+            </tr>
+            <tr>
+              <td>Reaction time</td>
+              <td>20 min</td>
+              <td><span class="badge badge--red">61</span></td>
+              <td class="text-faint">Mar 21</td>
+            </tr>
+            <tr>
+              <td>Wide angle flicks</td>
+              <td>35 min</td>
+              <td><span class="badge badge--green">91</span></td>
+              <td class="text-faint">Mar 20</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Side panels -->
+      <div class="side-panels">
+
+        <!-- Weekly goal -->
+        <div class="panel">
+          <div class="panel__header">
+            <span class="panel__title">Weekly Goal</span>
+            <span class="text-faint">5 / 7 days</span>
+          </div>
+          <div class="goal-bar">
+            <div class="goal-bar__track">
+              <div class="goal-bar__fill" style="width: 71%"></div>
+            </div>
+            <span class="goal-bar__label">71% complete</span>
+          </div>
+          <div class="day-dots">
+            <span class="day-dot day-dot--done">M</span>
+            <span class="day-dot day-dot--done">T</span>
+            <span class="day-dot day-dot--done">W</span>
+            <span class="day-dot day-dot--done">T</span>
+            <span class="day-dot day-dot--done">F</span>
+            <span class="day-dot">S</span>
+            <span class="day-dot">S</span>
+          </div>
+        </div>
+
+        <!-- Top drills -->
+        <div class="panel">
+          <div class="panel__header">
+            <span class="panel__title">Top Drills</span>
+          </div>
+          <ul class="drill-list">
+            <li class="drill-item">
+              <span class="drill-item__name">Flick training</span>
+              <span class="drill-item__score">94</span>
+            </li>
+            <li class="drill-item">
+              <span class="drill-item__name">Wide angle flicks</span>
+              <span class="drill-item__score">91</span>
+            </li>
+            <li class="drill-item">
+              <span class="drill-item__name">Crosshair placement</span>
+              <span class="drill-item__score">88</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+</div>
