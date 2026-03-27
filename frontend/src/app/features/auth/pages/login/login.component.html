@@ -1,0 +1,95 @@
+<div class="login-page">
+
+  <div class="login-page__branding">
+    <span class="logo">GHOST <em>PRO</em> ACADEMY</span>
+    <p class="tagline">Train like a ghost. Play like a pro.</p>
+    <ul class="features">
+      <li>Track every drill, measure every improvement</li>
+      <li>Compete on global leaderboards</li>
+      <li>Build consistent practice habits</li>
+    </ul>
+  </div>
+
+  <div class="login-page__panel">
+    <div class="login-card">
+
+      <div class="login-card__header">
+        <span class="logo">GHOST <em>PRO</em> ACADEMY</span>
+        <p class="tagline">Train like a ghost. Play like a pro.</p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+        <div class="field">
+          <label class="field__label" for="email">Email address</label>
+          <input
+            id="email"
+            class="field__input"
+            [class.field__input--error]="form.get('email')?.invalid && form.get('email')?.touched"
+            type="email"
+            formControlName="email"
+            placeholder="you@example.com"
+            autocomplete="email"
+          />
+          @if (form.get('email')?.touched) {
+            @if (form.get('email')?.hasError('required')) {
+              <span class="field__error">Email is required</span>
+            } @else if (form.get('email')?.hasError('email')) {
+              <span class="field__error">Enter a valid email</span>
+            }
+          }
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="password">Password</label>
+          <div class="field__password-wrapper">
+            <input
+              id="password"
+              class="field__input"
+              [class.field__input--error]="form.get('password')?.invalid && form.get('password')?.touched"
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="••••••••"
+              autocomplete="current-password"
+            />
+            <button type="button" class="field__toggle" (click)="togglePassword()">
+              {{ showPassword ? 'Hide' : 'Show' }}
+            </button>
+          </div>
+          @if (form.get('password')?.touched && form.get('password')?.hasError('required')) {
+            <span class="field__error">Password is required</span>
+          }
+        </div>
+
+        <a class="forgot-link" href="#">Forgot password?</a>
+
+        @if (appStore.authError()) {
+          <p class="auth-error">{{ appStore.authError() }}</p>
+        }
+
+        <button
+          type="submit"
+          class="btn-primary"
+          [disabled]="appStore.isLoading()"
+          [class.btn-primary--loading]="appStore.isLoading()"
+        >
+          @if (appStore.isLoading()) {
+            <span class="spinner"></span>
+          } @else {
+            Sign in
+          }
+        </button>
+
+      </form>
+
+      <div class="divider"><span>or</span></div>
+
+      <p class="signup-prompt">
+        Don't have an account?
+        <a class="signup-link" [routerLink]="routes.auth.register.path">Sign up</a>
+      </p>
+
+    </div>
+  </div>
+
+</div>

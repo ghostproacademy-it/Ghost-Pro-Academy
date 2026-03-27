@@ -1,0 +1,278 @@
+@use '../../../../../styles/mixins' as mx;
+
+// ── Page layout
+.login-page {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--bg-base);
+
+  &__branding {
+    display: none;
+
+    @include mx.for-desktop-up {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 20px;
+      flex: 1;
+      padding: 60px;
+      border-right: var(--border-width) solid var(--border-subtle);
+    }
+
+    .logo {
+      font-family: var(--font-display);
+      font-size: 36px;
+      letter-spacing: 0.16em;
+      color: var(--text-primary);
+
+      em {
+        color: var(--green-bright);
+        font-style: normal;
+      }
+    }
+
+    .tagline {
+      font-size: 15px;
+      color: var(--text-muted);
+    }
+
+    .features {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 8px;
+
+      li {
+        position: relative;
+        padding-left: 18px;
+        font-size: 14px;
+        color: var(--green-muted);
+
+        &::before {
+          content: '—';
+          position: absolute;
+          left: 0;
+          color: var(--green-bright);
+        }
+      }
+    }
+  }
+
+  &__panel {
+    @include mx.flex-center;
+    flex: 1;
+    padding: 24px;
+  }
+}
+
+// ── Card
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--bg-surface);
+  border: var(--border-width) solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 36px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    .logo {
+      font-family: var(--font-display);
+      font-size: 28px;
+      letter-spacing: 0.14em;
+      color: var(--text-primary);
+
+      em {
+        color: var(--green-bright);
+        font-style: normal;
+      }
+    }
+
+    .tagline {
+      font-size: 13px;
+      color: var(--text-faint);
+    }
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
+// ── Form fields
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  &__label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-faint);
+  }
+
+  &__input {
+    width: 100%;
+    background: var(--bg-surface-2);
+    border: var(--border-width) solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 13px;
+    transition: border-color 0.15s ease;
+
+    &::placeholder {
+      color: var(--text-faint);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--green-bright);
+      box-shadow: 0 0 0 2px rgba(76, 175, 110, 0.15);
+    }
+
+    &--error {
+      border-color: var(--red-text);
+
+      &:focus {
+        border-color: var(--red-text);
+        box-shadow: 0 0 0 2px rgba(224, 80, 80, 0.15);
+      }
+    }
+  }
+
+  &__password-wrapper {
+    position: relative;
+
+    .field__input {
+      padding-right: 56px;
+    }
+  }
+
+  &__toggle {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--green-muted);
+    cursor: pointer;
+    transition: color 0.15s ease;
+
+    &:hover {
+      color: var(--green-bright);
+    }
+  }
+
+  &__error {
+    font-size: 12px;
+    color: var(--red-text);
+  }
+}
+
+// ── Forgot password
+.forgot-link {
+  align-self: flex-end;
+  font-size: 12px;
+  color: var(--green-bright);
+  transition: opacity 0.15s ease;
+  margin-top: -8px;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+// ── Auth error
+.auth-error {
+  font-size: 13px;
+  color: var(--red-text);
+  background: var(--red-fill);
+  border: var(--border-width) solid var(--red-border);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+}
+
+// ── Primary button
+.btn-primary {
+  @include mx.flex-center;
+  width: 100%;
+  background: var(--green-bright);
+  color: #0a0f0a;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 11px 22px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+  min-height: 42px;
+
+  &:hover:not(:disabled) {
+    opacity: 0.88;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+// ── Spinner
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(10, 15, 10, 0.3);
+  border-top-color: #0a0f0a;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// ── Divider
+.divider {
+  @include mx.flex-center;
+  gap: 12px;
+  color: var(--text-faint);
+  font-size: 12px;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: var(--border-width);
+    background: var(--border-subtle);
+  }
+}
+
+// ── Sign up prompt
+.signup-prompt {
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.signup-link {
+  color: var(--green-bright);
+  font-weight: 500;
+  transition: opacity 0.15s ease;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
