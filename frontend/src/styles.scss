@@ -1,1 +1,10 @@
-/* You can add global styles to this file, and also import other style files */
+@use 'styles/tokens' as t;
+@use 'styles/typography' as ty;
+@use 'styles/reset' as r;
+
+:root {
+  @include t.tokens();
+}
+
+@include ty.typography();
+@include r.reset();

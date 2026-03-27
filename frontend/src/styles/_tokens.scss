@@ -1,0 +1,53 @@
+@mixin tokens() {
+  // ── Backgrounds
+  --bg-base:       #0d120d;
+  --bg-surface:    #111811;
+  --bg-surface-2:  #0d120d;
+  --bg-hover:      #162016;
+
+  // ── Borders
+  --border-subtle: #1e2e1e;
+  --border-medium: #2a3a2a;
+  --border-strong: #2a4a2a;
+  --border-width:  0.5px;
+
+  // ── Accent — Green
+  --green-bright:  #4caf6e;
+  --green-dim:     #1e5030;
+  --green-fill:    #0d2a1a;
+  --green-text:    #c8e8c8;
+  --green-muted:   #6a8a6a;
+  --green-faint:   #4a6a4a;
+
+  // ── Accent — Gold
+  --gold-bright:   #f0b840;
+  --gold-fill:     #2a200a;
+  --gold-border:   #4a3a1a;
+
+  // ── Accent — Red
+  --red-text:      #e05050;
+  --red-fill:      #2a0a0a;
+  --red-border:    #4a1a1a;
+
+  // ── Accent — Blue
+  --blue-text:     #7a8ad4;
+  --blue-fill:     #1a1a2a;
+  --blue-border:   #2a3a5a;
+
+  // ── Accent — Orange
+  --orange-text:   #e09040;
+  --orange-fill:   #2a1a0a;
+  --orange-border: #4a3a1a;
+
+  // ── Text
+  --text-primary:   #e8f5e8;
+  --text-secondary: #c8e8c8;
+  --text-muted:     #6a8a6a;
+  --text-faint:     #4a6a4a;
+
+  // ── Radius
+  --radius-sm:   6px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-full: 50%;
+}
