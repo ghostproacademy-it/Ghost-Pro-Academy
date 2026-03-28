@@ -1,0 +1,48 @@
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="sidebar__logo">GHOST <em>PRO</em></div>
+
+    <nav class="sidebar__nav">
+      <a class="nav-item" [routerLink]="routes.dashboard.path" routerLinkActive="nav-item--active">
+        <span class="nav-item__icon">▦</span>
+        Overview
+      </a>
+      <a class="nav-item" href="#">
+        <span class="nav-item__icon">◎</span>
+        Drills
+      </a>
+      <a class="nav-item" href="#">
+        <span class="nav-item__icon">▲</span>
+        Leaderboard
+      </a>
+      <a class="nav-item" href="#">
+        <span class="nav-item__icon">◈</span>
+        Progress
+      </a>
+      <a class="nav-item" href="#">
+        <span class="nav-item__icon">⊞</span>
+        Sessions
+      </a>
+      <a class="nav-item" [routerLink]="routes.exercises.path" routerLinkActive="nav-item--active">
+        <span class="nav-item__icon">◉</span>
+        Exercices
+      </a>
+    </nav>
+
+    <div class="sidebar__footer">
+      <div class="user-card">
+        <div class="user-card__avatar">GH</div>
+        <div class="user-card__info">
+          <span class="user-card__name">Ghost Player</span>
+          <span class="user-card__role">Pro Member</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="layout__content">
+    <router-outlet />
+  </div>
+
+</div>
