@@ -1,0 +1,397 @@
+<div class="pool-table__editor-chrome">
+  <header class="pool-table__intro" aria-label="Editor introduction">
+    <p class="pool-table__hint">
+      @if (editable()) {
+        Drag balls to the table. Lines &amp; arrows: double-click to finish. In
+        <strong>Select</strong>, pick a shape or a ball — opacity, layers, duplicate / delete (or Delete key).
+      } @else {
+        Read-only view.
+      }
+    </p>
+  </header>
+
+  @if (editable()) {
+    <input
+      #importJsonInput
+      type="file"
+      accept="application/json,.json"
+      hidden
+      (change)="onImportJsonSelected($event)"
+    />
+
+    <article class="pool-table__card pool-table__card--doc-toolbar" aria-label="Document">
+      <div class="pool-table__doc-toolbar" role="toolbar">
+        <div class="pool-table__doc-toolbar-cluster pool-table__doc-toolbar-cluster--title">
+          <span id="pool-doc-card-title" class="pool-table__doc-toolbar-title">Document</span>
+        </div>
+
+        <div class="pool-table__doc-toolbar-cluster" aria-label="Load and appearance">
+          <span class="pool-table__doc-toolbar-label">Load &amp; appearance</span>
+          <div class="pool-table__btn-wrap pool-table__btn-wrap--tight">
+            <button
+              type="button"
+              class="pool-table__btn pool-table__btn--compact"
+              (click)="openJsonImportPicker(importJsonInput)"
+            >
+              Import
+            </button>
+            <button type="button" class="pool-table__btn pool-table__btn--compact" (click)="openPasteJsonDialog()">
+              Paste JSON
+            </button>
+            <button
+              type="button"
+              class="pool-table__btn pool-table__btn--ghost pool-table__btn--compact"
+              (click)="openTableConfigDialog()"
+            >
+              Table colors
+            </button>
+          </div>
+        </div>
+
+        <div class="pool-table__doc-toolbar-cluster pool-table__doc-toolbar-cluster--name" aria-label="Diagram name">
+          <span class="pool-table__doc-toolbar-label">Diagram name</span>
+          <label class="pool-table__doc-name-row">
+            <span class="pool-table__doc-name-row-label">File / title</span>
+            <input
+              type="text"
+              class="pool-table__field-input pool-table__field-input--text pool-table__doc-name-input"
+              spellcheck="false"
+              autocomplete="off"
+              [value]="state.diagramName()"
+              (input)="onDiagramNameInput($any($event.target).value)"
+              placeholder="pool-diagram"
+            />
+          </label>
+        </div>
+
+        <div class="pool-table__doc-toolbar-cluster" aria-label="Configuration">
+          <span class="pool-table__doc-toolbar-label">Configuration</span>
+          <div class="pool-table__btn-wrap pool-table__btn-wrap--tight">
+            <button type="button" class="pool-table__btn pool-table__btn--primary pool-table__btn--compact" (click)="saveConfiguration()">
+              Save
+            </button>
+            <button type="button" class="pool-table__btn pool-table__btn--compact" (click)="exportConfigurationToFile()">
+              Export
+            </button>
+            <button type="button" class="pool-table__btn pool-table__btn--ghost pool-table__btn--compact" (click)="copyDocumentJson()">
+              Copy
+            </button>
+          </div>
+        </div>
+
+        <div class="pool-table__doc-toolbar-cluster" aria-label="Reset">
+          <span class="pool-table__doc-toolbar-label">Reset</span>
+          <div class="pool-table__btn-wrap pool-table__btn-wrap--tight">
+            @if (!document()) {
+              <button
+                type="button"
+                class="pool-table__btn pool-table__btn--ghost pool-table__btn--compact"
+                (click)="startNewDiagram()"
+              >
+                New diagram
+              </button>
+            }
+            <button
+              type="button"
+              class="pool-table__btn pool-table__btn--ghost pool-table__btn--compact"
+              (click)="clearDiagram()"
+            >
+              Balls to rack
+            </button>
+            <button
+              type="button"
+              class="pool-table__btn pool-table__btn--ghost pool-table__btn--compact"
+              (click)="clearAnnotations()"
+            >
+              Clear drawings
+            </button>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <div class="pool-table__workspace-grid" role="toolbar" aria-label="Drawing and selection">
+      <article class="pool-table__card" aria-labelledby="pool-tools-title">
+        <h2 id="pool-tools-title" class="pool-table__card-title">Tools</h2>
+        <div class="pool-table__tool-grid">
+          @for (opt of editorToolOptions; track opt.id) {
+            <button
+              type="button"
+              class="pool-table__tool"
+              [class.pool-table__tool--active]="state.editorTool() === opt.id"
+              (click)="setTool(opt.id)"
+            >
+              {{ opt.label }}
+            </button>
+          }
+        </div>
+        <label class="pool-table__check pool-table__check--block">
+          <input
+            type="checkbox"
+            [checked]="state.rectFilled()"
+            (change)="onRectFilledChange($any($event.target).checked)"
+          />
+          Filled rectangle
+        </label>
+      </article>
+
+      <article class="pool-table__card" aria-labelledby="pool-style-title">
+        <h2 id="pool-style-title" class="pool-table__card-title">Stroke &amp; view</h2>
+        <div class="pool-table__stack">
+          <label class="pool-table__field pool-table__field--inline">
+            <span class="pool-table__field-label">Color</span>
+            <input
+              type="color"
+              class="pool-table__color-input"
+              [value]="state.strokeColor()"
+              (input)="onStrokeColorInput($any($event.target).value)"
+            />
+          </label>
+          <label class="pool-table__field pool-table__field--range">
+            <span class="pool-table__field-label">Stroke width</span>
+            <input
+              type="range"
+              [min]="annotationStrokeMin"
+              [max]="annotationStrokeMax"
+              [value]="state.annotationStrokeWidth()"
+              (input)="onAnnotationStrokeWidthInput(+$any($event.target).value)"
+            />
+            <span class="pool-table__value-pill">{{ state.annotationStrokeWidth() }}</span>
+          </label>
+          <label class="pool-table__check pool-table__check--block">
+            <input
+              type="checkbox"
+              [checked]="state.showZonesOverlay()"
+              (change)="onShowZonesOverlayChange($any($event.target).checked)"
+            />
+            Show zone guides
+          </label>
+        </div>
+      </article>
+
+      <article class="pool-table__card" aria-labelledby="pool-text-title">
+        <h2 id="pool-text-title" class="pool-table__card-title">Text (new)</h2>
+        <div class="pool-table__stack">
+          <label class="pool-table__field pool-table__field--text">
+            <span class="pool-table__field-label">Content</span>
+            <input
+              type="text"
+              class="pool-table__field-input pool-table__field-input--text"
+              [value]="state.textDraft()"
+              (input)="onTextDraftInput($any($event.target).value)"
+              placeholder="Type text"
+            />
+          </label>
+
+          <label class="pool-table__field pool-table__field--grow">
+            <span class="pool-table__field-label">Font</span>
+            <select
+              class="pool-table__field-select"
+              [value]="state.textFontFamily()"
+              (change)="onTextFontFamilyChange($any($event.target).value)"
+            >
+              @for (opt of textFontOptions; track opt.value) {
+                <option [value]="opt.value">{{ opt.label }}</option>
+              }
+            </select>
+          </label>
+
+          <label class="pool-table__field pool-table__field--range">
+            <span class="pool-table__field-label">Size</span>
+            <input
+              type="range"
+              [min]="textFontSizeMin"
+              [max]="textFontSizeMax"
+              [value]="state.textFontSize()"
+              (input)="onTextFontSizeChange(+$any($event.target).value)"
+            />
+            <span class="pool-table__value-pill">{{ state.textFontSize() }}</span>
+          </label>
+        </div>
+      </article>
+
+      <article class="pool-table__card" aria-labelledby="pool-layers-title">
+        <h2 id="pool-layers-title" class="pool-table__card-title">Layer order</h2>
+        <p class="pool-table__card-hint">Select a shape first</p>
+        <div class="pool-table__btn-wrap pool-table__btn-wrap--2col">
+          <button
+            type="button"
+            class="pool-table__btn pool-table__btn--ghost pool-table__btn--sm"
+            (click)="moveSelectedAnnotationBackward()"
+            [disabled]="!state.selectedAnnotationId()"
+          >
+            Back
+          </button>
+          <button
+            type="button"
+            class="pool-table__btn pool-table__btn--ghost pool-table__btn--sm"
+            (click)="moveSelectedAnnotationForward()"
+            [disabled]="!state.selectedAnnotationId()"
+          >
+            Forward
+          </button>
+          <button
+            type="button"
+            class="pool-table__btn pool-table__btn--ghost pool-table__btn--sm"
+            (click)="moveSelectedAnnotationToBack()"
+            [disabled]="!state.selectedAnnotationId()"
+          >
+            To back
+          </button>
+          <button
+            type="button"
+            class="pool-table__btn pool-table__btn--ghost pool-table__btn--sm"
+            (click)="moveSelectedAnnotationToFront()"
+            [disabled]="!state.selectedAnnotationId()"
+          >
+            To front
+          </button>
+        </div>
+      </article>
+
+      <article class="pool-table__card" aria-labelledby="pool-selection-title">
+        <h2 id="pool-selection-title" class="pool-table__card-title">Selection</h2>
+        <p class="pool-table__card-hint">Shape or ball on table</p>
+        <div class="pool-table__stack">
+          <label
+            class="pool-table__field pool-table__field--range"
+            [class.pool-table__field--disabled]="!hasOpacitySelection()"
+          >
+            <span class="pool-table__field-label">Opacity</span>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              step="1"
+              [value]="selectionOpacityPercent()"
+              (input)="onSelectionOpacityPercentInput(+$any($event.target).value)"
+              [disabled]="!hasOpacitySelection()"
+            />
+            <span class="pool-table__value-pill">{{ selectionOpacityPercent() }}%</span>
+          </label>
+
+          <div class="pool-table__btn-wrap pool-table__btn-wrap--full">
+            <button
+              type="button"
+              class="pool-table__btn pool-table__btn--ghost pool-table__btn--sm"
+              (click)="deleteSelectedAnnotation()"
+              [disabled]="!state.selectedAnnotationId()"
+            >
+              Delete shape
+            </button>
+          </div>
+
+          <div class="pool-table__btn-wrap pool-table__btn-wrap--2col">
+            <button
+              type="button"
+              class="pool-table__btn pool-table__btn--ghost pool-table__btn--sm"
+              (click)="duplicateSelectedBall()"
+              [disabled]="!state.selectedTableBallInstanceId()"
+            >
+              Duplicate ball
+            </button>
+            <button
+              type="button"
+              class="pool-table__btn pool-table__btn--ghost pool-table__btn--sm pool-table__btn--danger"
+              (click)="removeSelectedTableBall()"
+              [disabled]="!state.selectedTableBallInstanceId()"
+            >
+              Remove ball
+            </button>
+          </div>
+        </div>
+      </article>
+    </div>
+  }
+
+  @if (isJsonPasteDialogOpen()) {
+    <div class="pool-table__dialog-backdrop" (click)="closePasteJsonDialog()">
+      <section
+        class="pool-table__dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Paste diagram configuration"
+        (click)="$event.stopPropagation()"
+      >
+        <h3 class="pool-table__dialog-title">Paste Diagram Configuration</h3>
+        <p class="pool-table__dialog-help">Paste or edit the configuration, then click Import.</p>
+        <textarea
+          class="pool-table__dialog-textarea"
+          [value]="jsonPasteDraft()"
+          (input)="onJsonPasteDraftChange($any($event.target).value)"
+        ></textarea>
+        <div class="pool-table__dialog-actions">
+          <button
+            type="button"
+            class="pool-table__btn pool-table__btn--ghost"
+            (click)="closePasteJsonDialog()"
+          >
+            Cancel
+          </button>
+          <button type="button" class="pool-table__btn" (click)="importJsonFromDialog()">Import</button>
+        </div>
+      </section>
+    </div>
+  }
+
+  @if (isTableConfigDialogOpen()) {
+    <div class="pool-table__dialog-backdrop" (click)="closeTableConfigDialog()">
+      <section
+        class="pool-table__dialog pool-table__dialog--compact"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Table settings"
+        (click)="$event.stopPropagation()"
+      >
+        <h3 class="pool-table__dialog-title">Table Settings</h3>
+        <p class="pool-table__dialog-help">Customize table colors used in this editor view.</p>
+        <div class="pool-table__config-grid">
+          <label class="pool-table__config-color">
+            Table frame
+            <input
+              type="color"
+              [value]="state.tableColors().frame"
+              (input)="updateTableColor('frame', $any($event.target).value)"
+            />
+          </label>
+          <label class="pool-table__config-color">
+            Diamonds
+            <input
+              type="color"
+              [value]="state.tableColors().diamond"
+              (input)="updateTableColor('diamond', $any($event.target).value)"
+            />
+          </label>
+          <label class="pool-table__config-color">
+            Cloth
+            <input
+              type="color"
+              [value]="state.tableColors().cloth"
+              (input)="updateTableColor('cloth', $any($event.target).value)"
+            />
+          </label>
+          <label class="pool-table__config-color">
+            Cushions
+            <input
+              type="color"
+              [value]="state.tableColors().cushion"
+              (input)="updateTableColor('cushion', $any($event.target).value)"
+            />
+          </label>
+          <label class="pool-table__config-color">
+            Zones
+            <input
+              type="color"
+              [value]="state.tableColors().zones"
+              (input)="updateTableColor('zones', $any($event.target).value)"
+            />
+          </label>
+        </div>
+        <div class="pool-table__dialog-actions">
+          <button type="button" class="pool-table__btn" (click)="closeTableConfigDialog()">Done</button>
+        </div>
+      </section>
+    </div>
+  }
+</div>
+

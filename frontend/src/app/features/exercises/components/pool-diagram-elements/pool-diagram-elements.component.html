@@ -1,0 +1,65 @@
+@for (el of normalized(); track el.id) {
+  @if (isLine(el)) {
+    <svg:g [class.pool-ann--selected]="isSelected(el.id)" [attr.opacity]="elementDisplayOpacity(el)">
+      @if (el.type === 'arrow') {
+        <svg:line
+          [attr.x1]="el.x1"
+          [attr.y1]="el.y1"
+          [attr.x2]="arrowShaftEnd(el).x"
+          [attr.y2]="arrowShaftEnd(el).y"
+          [attr.stroke]="el.color"
+          fill="none"
+          [attr.stroke-width]="el.strokeWidth"
+          stroke-linecap="butt"
+          pointer-events="none"
+        />
+        <svg:polygon
+          [attr.points]="arrowHeadPoints(el)"
+          [attr.fill]="el.color"
+          stroke="none"
+          pointer-events="none"
+        />
+      } @else {
+        <svg:line
+          [attr.x1]="el.x1"
+          [attr.y1]="el.y1"
+          [attr.x2]="el.x2"
+          [attr.y2]="el.y2"
+          [attr.stroke]="el.color"
+          fill="none"
+          [attr.stroke-width]="el.strokeWidth"
+          [attr.stroke-dasharray]="el.type === 'dashed' ? '18 14' : null"
+          pointer-events="none"
+        />
+      }
+    </svg:g>
+  } @else if (isRect(el)) {
+    <svg:g [class.pool-ann--selected]="isSelected(el.id)" [attr.opacity]="elementDisplayOpacity(el)">
+      <svg:rect
+        [attr.x]="el.x"
+        [attr.y]="el.y"
+        [attr.width]="el.width"
+        [attr.height]="el.height"
+        [attr.fill]="el.filled ? el.color : 'none'"
+        [attr.fill-opacity]="el.filled ? (el.fillOpacity ?? 0.35) : null"
+        [attr.stroke]="el.color"
+        [attr.stroke-width]="el.strokeWidth"
+        pointer-events="none"
+      />
+    </svg:g>
+  } @else if (isText(el)) {
+    <svg:g [class.pool-ann--selected]="isSelected(el.id)" [attr.opacity]="elementDisplayOpacity(el)">
+      <svg:text
+        [attr.x]="el.x"
+        [attr.y]="el.y"
+        [attr.fill]="el.color"
+        [attr.font-size]="el.fontSize"
+        [attr.font-family]="el.fontFamily"
+        dominant-baseline="hanging"
+        pointer-events="none"
+      >
+        {{ el.text }}
+      </svg:text>
+    </svg:g>
+  }
+}

@@ -1,0 +1,21 @@
+<div class="pool-viewer-page">
+  <nav class="pool-viewer-page__nav" aria-label="Navigation">
+    <a routerLink="/pool/editor" class="pool-viewer-page__link">Back to editor</a>
+    <label class="pool-viewer-page__file">
+      Import JSON…
+      <input type="file" accept="application/json,.json" (change)="onJsonFile($event)" />
+    </label>
+  </nav>
+
+  <label class="pool-viewer-page__label" for="pool-json-ta">Diagram JSON</label>
+  <textarea
+    id="pool-json-ta"
+    class="pool-viewer-page__ta"
+    rows="10"
+    [value]="jsonText()"
+    (input)="jsonText.set($any($event.target).value)"
+    spellcheck="false"
+  ></textarea>
+
+  <app-pool-diagram-viewer [diagramJson]="jsonText()" />
+</div>

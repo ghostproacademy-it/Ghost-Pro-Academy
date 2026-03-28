@@ -1,0 +1,76 @@
+.pool-viewer-page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0.75rem 1rem 1.5rem;
+  background: #141110;
+  min-height: 100vh;
+  min-height: 100dvh;
+  box-sizing: border-box;
+}
+
+.pool-viewer-page__nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.pool-viewer-page__link {
+  color: #c4a574;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-decoration: none;
+}
+
+.pool-viewer-page__link:hover {
+  text-decoration: underline;
+}
+
+.pool-viewer-page__file {
+  position: relative;
+  display: inline-block;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid #5c4f47;
+  background: #2d2622;
+  color: #f0ebe7;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.pool-viewer-page__file input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.pool-viewer-page__label {
+  display: block;
+  font-size: 0.75rem;
+  color: #9a8f88;
+  margin-bottom: 0.35rem;
+}
+
+.pool-viewer-page__ta {
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 1rem;
+  padding: 0.5rem 0.6rem;
+  font-family: ui-monospace, monospace;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  border-radius: 6px;
+  border: 1px solid #3d3530;
+  background: #1c1816;
+  color: #e8e0da;
+  resize: vertical;
+}
+
+.pool-viewer-page__ta:focus-visible {
+  outline: 2px solid #c4a574;
+  outline-offset: 2px;
+}

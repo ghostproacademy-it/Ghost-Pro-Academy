@@ -1,0 +1,274 @@
+<div class="pool-table">
+  @if (showToolbar()) {
+    <app-pool-table-tools
+      [editable]="editable()"
+      [document]="document()"
+      [state]="state"
+      (diagramNameChangeRequested)="state.diagramName.set($event)"
+      (rectFilledChangeRequested)="state.rectFilled.set($event)"
+      (strokeColorChangeRequested)="state.strokeColor.set($event)"
+      (annotationStrokeWidthChangeRequested)="state.annotationStrokeWidth.set($event)"
+      (showZonesOverlayChangeRequested)="state.showZonesOverlay.set($event)"
+      (textDraftChangeRequested)="state.textDraft.set($event)"
+      (textFontFamilyChangeRequested)="state.textFontFamily.set($event)"
+      (textFontSizeChangeRequested)="state.textFontSize.set($event)"
+      (toolChangeRequested)="state.editorTool.set($event)"
+      (selectionOpacityRequested)="state.applyOpacityToSelection($event)"
+      (startNewDiagramRequested)="startNewDiagramFromTools()"
+      (clearDiagramRequested)="state.clearTableToRack()"
+      (clearAnnotationsRequested)="state.clearAnnotations()"
+      (deleteSelectedAnnotationRequested)="deleteSelectedAnnotationFromTools()"
+      (duplicateSelectedBallRequested)="state.duplicateSelectedTableBall()"
+      (moveSelectedAnnotationBackwardRequested)="moveSelectedAnnotationBackwardFromTools()"
+      (moveSelectedAnnotationForwardRequested)="moveSelectedAnnotationForwardFromTools()"
+      (moveSelectedAnnotationToBackRequested)="moveSelectedAnnotationToBackFromTools()"
+      (moveSelectedAnnotationToFrontRequested)="moveSelectedAnnotationToFrontFromTools()"
+      (removeSelectedTableBallRequested)="removeSelectedTableBallFromTools()"
+      (tableColorChangeRequested)="onTableColorChange($event)"
+      (applyDocumentRequested)="state.applyDocument($event)"
+      (saveConfigurationRequested)="saveConfigurationFromTools()"
+    />
+  }
+  @if (editable()) {
+    @let ballD = ballDiameterPx();
+    <div
+      class="pool-table__rack"
+      role="group"
+      aria-label="Off-table balls"
+      [style.--pool-rack-ball.px]="ballD"
+    >
+      @for (slot of rackSlotIndexes; track slot) {
+        <div class="pool-table__rack-cell">
+          @if (state.rackSlots()[slot] !== null) {
+            @let bid = state.rackSlots()[slot]!;
+            <svg
+              class="pool-table__rack-svg"
+              [attr.width]="ballD"
+              [attr.height]="ballD"
+              [attr.viewBox]="ballOnlyViewBox"
+              preserveAspectRatio="xMidYMid meet"
+              appPoolBallDrag
+              [ballId]="bid"
+              [ghostSizePx]="ballD"
+              (beginDrag)="onPoolBallDragBegin($event)"
+              role="img"
+              [attr.aria-label]="'Ball ' + bid"
+            >
+              <g appPoolBallGraphic [ballId]="bid" [defsIdPrefix]="'rack-' + slot" />
+            </svg>
+          } @else {
+            <div class="pool-table__rack-empty" aria-hidden="true"></div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  @if (state.drag(); as d) {
+    <div
+      class="pool-table__ghost"
+      [style.width.px]="d.ghostSizePx"
+      [style.height.px]="d.ghostSizePx"
+      [style.left.px]="d.clientX - d.grabOffsetClientX - d.ghostSizePx / 2"
+      [style.top.px]="d.clientY - d.grabOffsetClientY - d.ghostSizePx / 2"
+      aria-hidden="true"
+    >
+      <svg width="100%" height="100%" [attr.viewBox]="ballOnlyViewBox" preserveAspectRatio="xMidYMid meet">
+        <g appPoolBallGraphic [ballId]="d.ballId" defsIdPrefix="ghost" />
+      </svg>
+    </div>
+  }
+
+  <svg
+    #tableSvg
+    class="pool-table__svg"
+    [attr.viewBox]="'0 0 ' + scene.view.w + ' ' + scene.view.h"
+    preserveAspectRatio="xMidYMid meet"
+    role="img"
+    aria-label="American pool table"
+    (pointerdown)="onTablePointerDown($event)"
+    (pointermove)="onSvgPointerMove($event)"
+    (pointerleave)="onSvgPointerLeave()"
+  >
+    <defs>
+      @for (w of scene.walls; track w.id) {
+        <clipPath [attr.id]="w.id">
+          <path [attr.d]="w.woodPath" />
+        </clipPath>
+      }
+      <radialGradient
+        id="feltGrad"
+        gradientUnits="userSpaceOnUse"
+        [attr.cx]="scene.view.w * 0.5"
+        [attr.cy]="scene.view.h * 0.5"
+        [attr.r]="scene.feltGradientRadius"
+      >
+        <stop offset="0%" stop-color="rgba(255,255,255,0.05)" />
+        <stop offset="25%" stop-color="rgba(255,255,255,0.05)" />
+        <stop offset="100%" stop-color="rgba(255,255,255,0.15)" />
+      </radialGradient>
+      <clipPath id="poolDiagramPlayfieldClip">
+        <rect
+          [attr.x]="poolZones.playfieldClip.x"
+          [attr.y]="poolZones.playfieldClip.y"
+          [attr.width]="poolZones.playfieldClip.w"
+          [attr.height]="poolZones.playfieldClip.h"
+          [attr.rx]="tableCornerRadius"
+          [attr.ry]="tableCornerRadius"
+        />
+      </clipPath>
+      <clipPath id="poolTableOuterClip">
+        <rect
+          x="0"
+          y="0"
+          [attr.width]="scene.view.w"
+          [attr.height]="scene.view.h"
+          [attr.rx]="tableCornerRadius"
+          [attr.ry]="tableCornerRadius"
+        />
+      </clipPath>
+    </defs>
+
+    <g [attr.clip-path]="'url(#poolTableOuterClip)'">
+      <rect
+        x="0"
+        y="0"
+        [attr.width]="scene.view.w"
+        [attr.height]="scene.view.h"
+        [attr.fill]="state.tableColors().frame"
+      />
+
+      <rect
+        [attr.x]="scene.slate.x"
+        [attr.y]="scene.slate.y"
+        [attr.width]="scene.slate.w"
+        [attr.height]="scene.slate.h"
+        [attr.fill]="state.tableColors().cloth"
+        [attr.rx]="tableCornerRadius"
+        [attr.ry]="tableCornerRadius"
+      />
+      <rect
+        [attr.x]="scene.slate.x"
+        [attr.y]="scene.slate.y"
+        [attr.width]="scene.slate.w"
+        [attr.height]="scene.slate.h"
+        fill="url(#feltGrad)"
+        [attr.rx]="tableCornerRadius"
+        [attr.ry]="tableCornerRadius"
+      />
+
+      @for (w of scene.walls; track w.id) {
+        <g>
+          <path [attr.d]="w.woodPath" [attr.fill]="state.tableColors().frame" stroke="none" />
+          <g [attr.clip-path]="'url(#' + w.id + ')'">
+            <rect
+              [attr.x]="scene.bumperMask.x"
+              [attr.y]="scene.bumperMask.y"
+              [attr.width]="scene.bumperMask.w"
+              [attr.height]="scene.bumperMask.h"
+              [attr.fill]="state.tableColors().cushion"
+            />
+          </g>
+        </g>
+      }
+
+      @for (d of scene.diamonds; track $index) {
+        <polygon [attr.points]="d.points" [attr.fill]="state.tableColors().diamond" />
+      }
+
+      @for (p of scene.pockets; track $index) {
+        <circle
+          [attr.cx]="p.cx"
+          [attr.cy]="p.cy"
+          [attr.r]="scene.pocketRadius"
+          [attr.fill]="scene.colors.pocket"
+          stroke="rgba(0, 0, 0, 0.5)"
+          [attr.stroke-width]="1.15"
+          pointer-events="none"
+        />
+      }
+
+      @if (state.showZonesOverlay()) {
+        <g
+          [attr.clip-path]="'url(#poolDiagramPlayfieldClip)'"
+          [attr.pointer-events]="'none'"
+          class="pool-table__zones"
+        >
+          @for (seg of poolZones.segments; track $index) {
+            <line
+              [attr.x1]="seg.x1"
+              [attr.y1]="seg.y1"
+              [attr.x2]="seg.x2"
+              [attr.y2]="seg.y2"
+              [attr.stroke]="state.tableColors().zones"
+              [attr.stroke-opacity]="0.28"
+              [attr.stroke-width]="poolZones.style.lineWidth"
+              stroke-linecap="round"
+              fill="none"
+              [attr.pointer-events]="'none'"
+            />
+          }
+          <circle
+            [attr.cx]="poolZones.blackSpot.x"
+            [attr.cy]="poolZones.blackSpot.y"
+            [attr.r]="poolZones.style.spotRadius"
+            [attr.fill]="poolZones.style.spotFill"
+            [attr.pointer-events]="'none'"
+          />
+        </g>
+      }
+
+      <g appPoolDiagramElements [elements]="state.elements()" [selectedId]="state.selectedAnnotationId()" />
+
+      @if (lineDraft(); as ld) {
+        @if (linePreviewEnd(); as pe) {
+          <line
+            [attr.x1]="ld.x1"
+            [attr.y1]="ld.y1"
+            [attr.x2]="pe.x"
+            [attr.y2]="pe.y"
+            stroke="rgba(255, 255, 255, 0.45)"
+            [attr.stroke-width]="state.annotationStrokeWidth()"
+            fill="none"
+            pointer-events="none"
+            [attr.stroke-dasharray]="state.editorTool() === 'dashed' ? '14 10' : null"
+          />
+        }
+      }
+
+      @if (rectPreview(); as rp) {
+        <rect
+          [attr.x]="rp.x"
+          [attr.y]="rp.y"
+          [attr.width]="rp.w"
+          [attr.height]="rp.h"
+          fill="rgba(196, 165, 116, 0.2)"
+          stroke="rgba(255, 255, 255, 0.6)"
+          [attr.stroke-width]="state.annotationStrokeWidth()"
+          pointer-events="none"
+        />
+      }
+
+      @for (b of state.tableBalls(); track b.id) {
+        <g
+          [attr.transform]="ballGroupOnTable(b.x, b.y)"
+          [attr.opacity]="ballTableOpacity(b)"
+          data-pool-ball="true"
+          [attr.data-ball-instance]="b.id"
+          [class.pool-table__ball--selected]="editable() && state.selectedTableBallInstanceId() === b.id"
+        >
+          <g
+            appPoolBallDrag
+            [dragEnabled]="editable()"
+            [ballId]="b.ballId"
+            [tableInstanceId]="b.id"
+            [ghostSizePx]="ballDiameterPx()"
+            (beginDrag)="onPoolBallDragBegin($event)"
+          >
+            <g appPoolBallGraphic [ballId]="b.ballId" [defsIdPrefix]="'t-' + b.id" />
+          </g>
+        </g>
+      }
+    </g>
+  </svg>
+</div>

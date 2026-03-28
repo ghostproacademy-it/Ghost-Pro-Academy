@@ -15,4 +15,11 @@ export const APP_ROUTES = {
     root: 'dashboard',
     path: '/dashboard',
   },
+  exercises: {
+    root: 'exercises',
+    path: '/exercises',
+    viewer: {
+      path: '/exercises/viewer',
+    },
+  },
 } as const;

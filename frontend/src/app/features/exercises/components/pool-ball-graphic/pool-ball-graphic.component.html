@@ -1,0 +1,159 @@
+@let app = appearance();
+@let r = ballRadius();
+@let rimW = r * render.outerRimWidthRatio;
+<svg:defs>
+  <svg:clipPath [attr.id]="ballClipId()">
+    <svg:circle cx="0" cy="0" [attr.r]="r" />
+  </svg:clipPath>
+  <!-- Same center as the CSS reference (70% 15%), but with softer dark edges for readability on dark felt. -->
+  <svg:radialGradient [attr.id]="poolLightId()" cx="70%" cy="15%" r="100%" fx="70%" fy="15%">
+    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.48" />
+    <stop offset="14%" stop-color="#ffffff" stop-opacity="0.2" />
+    <stop offset="45%" stop-color="#ffffff" stop-opacity="0" />
+    <stop offset="72%" stop-color="#2a2a2a" stop-opacity="0.18" />
+    <stop offset="100%" stop-color="#1a1a1a" stop-opacity="0.32" />
+  </svg:radialGradient>
+  @if (app.kind === 'stripe') {
+    <svg:linearGradient [attr.id]="stripeBandId()" x1="0" x2="0" y1="0" y2="1" gradientUnits="objectBoundingBox">
+      <stop [attr.offset]="stripeGrad.t0" [attr.stop-color]="app.spec.stripe" stop-opacity="0" />
+      <stop [attr.offset]="stripeGrad.t1" [attr.stop-color]="app.spec.stripe" stop-opacity="0" />
+      <stop [attr.offset]="stripeGrad.t2" [attr.stop-color]="app.spec.stripe" stop-opacity="1" />
+      <stop [attr.offset]="stripeGrad.t3" [attr.stop-color]="app.spec.stripe" stop-opacity="1" />
+      <stop [attr.offset]="stripeGrad.t4" [attr.stop-color]="app.spec.stripe" stop-opacity="0" />
+      <stop [attr.offset]="stripeGrad.t5" [attr.stop-color]="app.spec.stripe" stop-opacity="0" />
+    </svg:linearGradient>
+  }
+</svg:defs>
+
+@switch (app.kind) {
+  @case ('cue') {
+    <svg:g [attr.clip-path]="'url(#' + ballClipId() + ')'">
+      <svg:circle cx="0" cy="0" [attr.r]="r" [attr.fill]="render.baseWhite" />
+      <svg:circle cx="0" cy="0" [attr.r]="r" [attr.fill]="'url(#' + poolLightId() + ')'" pointer-events="none" />
+    </svg:g>
+    <svg:circle
+      cx="0"
+      cy="0"
+      [attr.r]="r"
+      fill="none"
+      [attr.stroke]="render.outerRim"
+      [attr.stroke-width]="rimW"
+      pointer-events="none"
+    />
+  }
+  @case ('solid') {
+    <svg:g [attr.clip-path]="'url(#' + ballClipId() + ')'">
+      <svg:circle cx="0" cy="0" [attr.r]="r" [attr.fill]="render.baseWhite" />
+      <svg:circle cx="0" cy="0" [attr.r]="r" [attr.fill]="app.spec.body" />
+      <svg:circle
+        cx="0"
+        cy="0"
+        [attr.r]="plateR()"
+        [attr.fill]="render.baseWhite"
+        [attr.stroke]="render.numberPlateStroke"
+        [attr.stroke-width]="r * render.numberPlateStrokeWidthRatio"
+      />
+      <svg:circle cx="0" cy="0" [attr.r]="r" [attr.fill]="'url(#' + poolLightId() + ')'" pointer-events="none" />
+    </svg:g>
+    <svg:text
+      x="0"
+      y="0"
+      text-anchor="middle"
+      dominant-baseline="central"
+      font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, Arial, sans-serif"
+      font-weight="600"
+      [attr.font-size]="labelFontSize()"
+      [attr.fill]="app.spec.numberInk"
+      [attr.text-decoration]="numberUnderline() ? 'underline' : 'none'"
+    >
+      {{ app.label }}
+    </svg:text>
+    <svg:circle
+      cx="0"
+      cy="0"
+      [attr.r]="r"
+      fill="none"
+      [attr.stroke]="render.outerRim"
+      [attr.stroke-width]="rimW"
+      pointer-events="none"
+    />
+  }
+  @case ('eight') {
+    <svg:g [attr.clip-path]="'url(#' + ballClipId() + ')'">
+      <svg:circle cx="0" cy="0" [attr.r]="r" [attr.fill]="app.spec.body" />
+      <svg:circle
+        cx="0"
+        cy="0"
+        [attr.r]="plateR()"
+        [attr.fill]="app.spec.circle"
+        [attr.stroke]="render.numberPlateStroke"
+        [attr.stroke-width]="r * render.numberPlateStrokeWidthRatio"
+      />
+      <svg:circle cx="0" cy="0" [attr.r]="r" [attr.fill]="'url(#' + poolLightId() + ')'" pointer-events="none" />
+    </svg:g>
+    <svg:text
+      x="0"
+      y="0"
+      text-anchor="middle"
+      dominant-baseline="central"
+      font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, Arial, sans-serif"
+      font-weight="600"
+      [attr.font-size]="labelFontSize()"
+      [attr.fill]="app.spec.numberInk"
+    >
+      {{ app.label }}
+    </svg:text>
+    <svg:circle
+      cx="0"
+      cy="0"
+      [attr.r]="r"
+      fill="none"
+      [attr.stroke]="render.outerRim"
+      [attr.stroke-width]="rimW"
+      pointer-events="none"
+    />
+  }
+  @case ('stripe') {
+    <svg:g [attr.clip-path]="'url(#' + ballClipId() + ')'">
+      <svg:circle cx="0" cy="0" [attr.r]="r" [attr.fill]="render.baseWhite" />
+      <svg:rect
+        [attr.x]="-r"
+        [attr.y]="-r"
+        [attr.width]="r * 2"
+        [attr.height]="r * 2"
+        [attr.fill]="'url(#' + stripeBandId() + ')'"
+      />
+      <svg:circle
+        cx="0"
+        cy="0"
+        [attr.r]="plateR()"
+        [attr.fill]="render.baseWhite"
+        [attr.stroke]="render.numberPlateStroke"
+        [attr.stroke-width]="r * render.numberPlateStrokeWidthRatio"
+      />
+      <svg:circle cx="0" cy="0" [attr.r]="r" [attr.fill]="'url(#' + poolLightId() + ')'" pointer-events="none" />
+    </svg:g>
+    <svg:text
+      x="0"
+      y="0"
+      text-anchor="middle"
+      dominant-baseline="central"
+      font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, Arial, sans-serif"
+      font-weight="600"
+      [attr.font-size]="labelFontSize()"
+      [attr.fill]="app.spec.numberInk"
+      [attr.text-decoration]="numberUnderline() ? 'underline' : 'none'"
+    >
+      {{ app.label }}
+    </svg:text>
+    <svg:circle
+      cx="0"
+      cy="0"
+      [attr.r]="r"
+      fill="none"
+      [attr.stroke]="render.outerRim"
+      [attr.stroke-width]="rimW"
+      pointer-events="none"
+    />
+  }
+}

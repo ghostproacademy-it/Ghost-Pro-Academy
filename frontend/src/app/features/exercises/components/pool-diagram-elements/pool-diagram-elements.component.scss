@@ -1,0 +1,20 @@
+:host {
+  pointer-events: none;
+}
+
+.pool-ann--selected > line,
+.pool-ann--selected > rect {
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.95));
+}
+
+.pool-ann--selected > polygon {
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.9));
+}
+
+.pool-ann--selected > text {
+  /* White halo keeps selected labels visible regardless of felt/background color. */
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.95));
+  stroke: rgba(255, 255, 255, 0.8);
+  stroke-width: 1.1;
+  paint-order: stroke fill;
+}
